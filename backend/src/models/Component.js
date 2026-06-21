@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const priceHistorySchema = new mongoose.Schema(
   {
@@ -7,61 +7,40 @@ const priceHistorySchema = new mongoose.Schema(
       required: true,
       min: 0,
     },
-
     changedAt: {
       type: Date,
       default: Date.now,
     },
   },
-  {
-    _id: false,
-  },
+  { _id: false },
 );
 
 const componentSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-
       required: true,
-
       trim: true,
     },
-
     description: {
       type: String,
-
       default: "",
     },
-
     category: {
-      type: String,
-
-      enum: ["FRAME", "TYRE", "GEAR", "BRAKE", "CHAIN", "SEAT"],
-
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
       required: true,
     },
-
     currentPrice: {
       type: Number,
-
       required: true,
-
       min: 0,
     },
-
     priceHistory: [priceHistorySchema],
   },
-
-  {
-    timestamps: true,
-  },
+  { timestamps: true },
 );
 
-// faster searching by category
+componentSchema.index({ category: 1 });
 
-componentSchema.index({
-  category: 1,
-});
-
-module.exports = mongoose.model("Component", componentSchema);
+export default mongoose.model("Component", componentSchema);

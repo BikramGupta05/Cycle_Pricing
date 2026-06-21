@@ -1,31 +1,29 @@
-const express = require("express");
-const cors = require("cors");
-const componentRoutes = require("./routes/component.routes");
-const cycleRoutes = require("./routes/cycle.routes");
+import express from "express";
+import cors from "cors";
+
+import componentRoutes from "./routes/component.routes.js";
+import cycleRoutes from "./routes/cycle.routes.js";
+import categoryRoutes from "./routes/category.routes.js";
 
 const app = express();
-
-// middleware
-
 app.use(cors());
-
-// allows json data
-
 app.use(express.json());
-app.use("/api/components", componentRoutes);
-app.use("/api/cycles", cycleRoutes);
-// testing route
 
 app.get("/", (req, res) => {
-  res.send("Hero Cycle API Running");
+  res.json({
+    message: "Hero Cycle Pricing API running",
+  });
 });
-// handle unknown routes
+
+app.use("/api/components", componentRoutes);
+app.use("/api/cycles", cycleRoutes);
+app.use("/api/categories", categoryRoutes);
 
 app.use((req, res) => {
   res.status(404).json({
     success: false,
-
-    message: "API route not found",
+    message: "Route not found",
   });
 });
-module.exports = app;
+
+export default app;

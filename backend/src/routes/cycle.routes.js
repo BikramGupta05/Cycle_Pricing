@@ -1,22 +1,16 @@
-const express = require("express");
+import express from "express";
 
-const {
+import {
   createCycle,
-
   getCycles,
-
   getCyclePrice,
-} = require("../controllers/cycle.controller");
+  deleteCycle,
+} from "../controllers/cycle.controller.js";
 
 const router = express.Router();
 
-router
-  .route("/")
-
-  .post(createCycle)
-
-  .get(getCycles);
-
+router.route("/").get(getCycles).post(createCycle);
 router.get("/:id/price", getCyclePrice);
+router.delete("/:id", deleteCycle);
 
-module.exports = router;
+export default router;

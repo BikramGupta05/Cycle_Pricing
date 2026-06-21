@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const cycleSchema = new mongoose.Schema(
   {
@@ -7,19 +7,22 @@ const cycleSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-
-    components: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Component",
-        required: true,
+    components: {
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Component",
+        },
+      ],
+      validate: {
+        validator: (value) => value.length > 0,
+        message: "Select at least one component",
       },
-    ],
+    },
   },
-
   {
     timestamps: true,
   },
 );
 
-module.exports = mongoose.model("Cycle", cycleSchema);
+export default mongoose.model("Cycle", cycleSchema);

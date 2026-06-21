@@ -1,38 +1,27 @@
-const Cycle = require("../models/Cycle");
+import Cycle from "../models/Cycle.js";
 
-const calculateCyclePrice = async (cycleId) => {
-  const cycle = await Cycle.findById(cycleId).populate(
-    "components",
-    "name category currentPrice",
-  );
-
-  if (!cycle) {
-    return null;
-  }
-
+export const calculateCyclePrice = async (cycleId) => {
+  const cycle = await Cycle.findById(cycleId).populate({
+    path: "components",
+    select: "name category currentPrice",
+    populate: {
+      path: "category",
+      select: "name",
+    },
+  });
+  if (!cycle) return null;
   let totalPrice = 0;
-
-  const breakdown = cycle.components.map((component) => {
-    totalPrice += component.currentPrice;
-
+  const components = cycle.components.map((item) => {
+    totalPrice += item.currentPrice;
     return {
-      name: component.name,
-
-      category: component.category,
-
-      price: component.currentPrice,
+      name: item.name,
+      category: item.category.name,
+      price: item.currentPrice,
     };
   });
-
   return {
     cycleName: cycle.name,
-
-    components: breakdown,
-
+    components,
     totalPrice,
   };
-};
-
-module.exports = {
-  calculateCyclePrice,
 };

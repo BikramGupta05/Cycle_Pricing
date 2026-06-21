@@ -1,34 +1,15 @@
-const express = require("express");
-
-const {
+import express from "express";
+import {
   createComponent,
-
   getComponents,
-
   updatePrice,
-
   deleteComponent,
-} = require("../controllers/component.controller");
+} from "../controllers/component.controller.js";
 
 const router = express.Router();
 
-router
-  .route("/")
+router.route("/").get(getComponents).post(createComponent);
+router.patch("/:id/price", updatePrice);
+router.delete("/:id", deleteComponent);
 
-  .post(createComponent)
-
-  .get(getComponents);
-
-router.patch(
-  "/:id/price",
-
-  updatePrice,
-);
-
-router.delete(
-  "/:id",
-
-  deleteComponent,
-);
-
-module.exports = router;
+export default router;

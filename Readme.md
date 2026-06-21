@@ -1,19 +1,20 @@
 # Hero Cycles Pricing Engine
 
-Full-stack pricing engine for managing bicycle components, creating cycle configurations, and calculating real-time prices with component-wise breakdown.
+Full-stack pricing engine for managing bicycle components, creating cycle configurations, and calculating prices with component-wise breakdown.
 
 ---
 
 ## Problem
 
-Hero Cycles manages multiple bicycle configurations where component prices change over time.
+Hero Cycles manages thousands of bicycle configurations where component costs change over time.
 
 The system replaces manual Excel-based pricing by allowing sales teams to:
 
-- Manage bicycle components
+- Manage bicycle parts
 - Create cycle configurations
 - Update component prices
-- Calculate latest cycle prices instantly
+- Generate cycle price breakdown instantly
+- Preserve previous cycle quotations
 
 ---
 
@@ -21,28 +22,34 @@ The system replaces manual Excel-based pricing by allowing sales teams to:
 
 ### Component Management
 
-- Add new component categories
+- Create component categories
 - Add bicycle components
 - Update component prices
-- Maintain price history
 - Delete components
+- Delete categories
 - Search components
 - Category-wise component grouping
+- Input validation and error handling
+
+---
 
 ### Cycle Builder
 
 - Create cycle configurations
 - Select multiple components
 - Live price preview
-- Remove selected components
-- Validation for invalid cycles
+- Remove selected components before creating cycle
+- Prevent invalid cycle creation
+- Store component price snapshot when cycle is created
+
+---
 
 ### Price Calculator
 
-- View saved cycles
+- View saved cycle configurations
 - Component-wise price breakdown
-- Dynamic total price calculation
-- Delete cycles
+- Total price calculation
+- Delete saved cycles
 
 ---
 
@@ -78,70 +85,116 @@ The system replaces manual Excel-based pricing by allowing sales teams to:
 │       ├── api
 │       ├── pages
 │       └── App.jsx
-
-
 ```
 
 ---
 
-## Database Models
+# Database Design
 
-### Component
+## Category
 
 ```js
 {
-  (name, category, currentPrice, priceHistory);
+  name
 }
 ```
 
-### Cycle
+---
+
+## Component
 
 ```js
 {
   name,
-  components:[Component]
+
+  category,
+
+  currentPrice
 }
 ```
 
-Cycle prices are calculated dynamically using current component prices.
+---
+
+## Cycle
+
+```js
+{
+  name,
+
+  components:[
+    {
+      componentId,
+
+      name,
+
+      category,
+
+      price
+    }
+  ]
+}
+```
+
+Cycle stores component snapshots during creation.
+
+This ensures existing cycle quotations remain unchanged even if:
+
+- Component price changes
+- Component gets deleted
+- Category gets deleted
 
 ---
 
-## API Endpoints
+# API Endpoints
 
-### Components
+
+## Components
 
 | Method | Endpoint | Description |
+|---|---|---|
 | GET | /api/components | Get components |
-| POST | /api/components | Add component |
-| PATCH | /api/components/:id/price | Update price |
+| POST | /api/components | Create component |
+| PATCH | /api/components/:id/price | Update component price |
 | DELETE | /api/components/:id | Delete component |
 
-### Categories
+
+---
+
+## Categories
 
 | Method | Endpoint | Description |
+|---|---|---|
 | GET | /api/categories | Get categories |
-| POST | /api/categories | Add category |
+| POST | /api/categories | Create category |
+| DELETE | /api/categories/:id | Delete category |
 
-### Cycles
+
+---
+
+## Cycles
 
 | Method | Endpoint | Description |
+|---|---|---|
 | GET | /api/cycles | Get cycles |
 | POST | /api/cycles | Create cycle |
-| GET | /api/cycles/:id/price | Calculate price |
+| GET | /api/cycles/:id/price | Get price breakdown |
 | DELETE | /api/cycles/:id | Delete cycle |
 
 ---
 
-## Setup Instructions
+# Setup Instructions
 
-Clone repository
+
+## Clone Repository
 
 ```bash
 git clone <repository-url>
 ```
 
-## Backend
+
+---
+
+# Backend Setup
 
 ```bash
 cd backend
@@ -151,7 +204,8 @@ npm install
 npm run dev
 ```
 
-Environment variables:
+
+Create `.env` inside backend:
 
 ```env
 PORT=5000
@@ -159,7 +213,11 @@ PORT=5000
 MONGO_URI=your_mongodb_connection_string
 ```
 
-## Frontend
+
+---
+
+# Frontend Setup
+
 
 ```bash
 cd frontend
@@ -169,17 +227,49 @@ npm install
 npm run dev
 ```
 
+
+Create `.env` inside frontend:
+
+```env
+VITE_API_URL=http://localhost:5000/api
+```
+
+
 ---
 
-## Testing
+# Assumptions
 
-Manual testing was performed for:
+- Categories are dynamic because future bicycle types may require new component groups.
 
+- Existing cycle quotations should not change after creation.
+
+- Updated component prices affect only newly created cycles.
+
+- Deleted components/categories should not affect previous cycle pricing records.
+
+---
+
+# Testing
+
+Manual testing performed for:
+
+- Category creation and deletion
 - Component CRUD operations
-- Price update flow
+- Component price update
 - Cycle creation validation
 - Price calculation
+- Snapshot price preservation
 - Delete operations
-- Responsive UI behavior
+- Responsive UI
+
+---
+
+# Live Demo
+
+
+```
+(https://cycle-pricing-aaye.onrender.com)
+```
+
 
 ---
